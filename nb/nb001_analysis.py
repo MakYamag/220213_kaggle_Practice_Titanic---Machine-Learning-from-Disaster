@@ -5,7 +5,7 @@
 # - パーセプトロンモデルによって分類を試みた。
 # - *Name*、*Ticket*、*Cabin*は、ひとまず特徴量から抜いた。
 
-# In[3]:
+# In[2]:
 
 
 import numpy as np
@@ -13,14 +13,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[25]:
+# In[3]:
 
 
 train_data = pd.read_csv('../data/train.csv')
 train_data.head()
 
 
-# In[27]:
+# In[4]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -32,14 +32,14 @@ X = X.drop(['Sex_male', 'Embarked_S'], axis=1)
 X
 
 
-# In[28]:
+# In[5]:
 
 
 y = train_data['Survived']
 y
 
 
-# In[29]:
+# In[6]:
 
 
 # 欠損値を平均値で補完する
@@ -50,7 +50,7 @@ X_imputed = imr.transform(X)
 X_imputed.shape
 
 
-# In[30]:
+# In[7]:
 
 
 # 訓練用、テスト用にデータ分割する
@@ -61,7 +61,7 @@ print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
 
 
-# In[31]:
+# In[8]:
 
 
 # 特徴量を標準化する
@@ -74,14 +74,14 @@ X_test_std = sc.transform(X_test)
 X_train_std[0:5]
 
 
-# In[32]:
+# In[12]:
 
 
 # パーセプトロンで分類モデル作成
 # ===============================
 
 from sklearn.linear_model import Perceptron
-ppn = Perceptron(eta0=0.01, random_state=21)
+ppn = Perceptron(eta0=0.01, max_iter=100, random_state=21)
 ppn.fit(X_train_std, y_train)
 
 # X_testで分類予測
