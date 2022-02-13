@@ -1,1 +1,2 @@
-# kaggle_Practice_Titanic---Machine-Learning-from-Disaster
+# Log
+## 220213
