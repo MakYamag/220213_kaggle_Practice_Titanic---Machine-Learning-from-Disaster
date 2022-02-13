@@ -5,7 +5,7 @@
 # - パーセプトロンモデルによって分類を試みた。
 # - *Name*、*Ticket*、*Cabin*は、ひとまず特徴量から抜いた。
 
-# In[2]:
+# In[3]:
 
 
 import numpy as np
@@ -13,14 +13,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[9]:
+# In[25]:
 
 
-train_data = pd.read_csv('data/train.csv')
+train_data = pd.read_csv('../data/train.csv')
 train_data.head()
 
 
-# In[80]:
+# In[27]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -32,14 +32,14 @@ X = X.drop(['Sex_male', 'Embarked_S'], axis=1)
 X
 
 
-# In[81]:
+# In[28]:
 
 
 y = train_data['Survived']
 y
 
 
-# In[76]:
+# In[29]:
 
 
 # 欠損値を平均値で補完する
@@ -50,7 +50,7 @@ X_imputed = imr.transform(X)
 X_imputed.shape
 
 
-# In[95]:
+# In[30]:
 
 
 # 訓練用、テスト用にデータ分割する
@@ -61,7 +61,7 @@ print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
 
 
-# In[96]:
+# In[31]:
 
 
 # 特徴量を標準化する
@@ -74,7 +74,7 @@ X_test_std = sc.transform(X_test)
 X_train_std[0:5]
 
 
-# In[97]:
+# In[32]:
 
 
 # パーセプトロンで分類モデル作成
