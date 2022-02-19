@@ -6,7 +6,7 @@
 # - nb001, nb002と同様、*Name*、*Ticket*、*Cabin*は、ひとまず特徴量から抜いた。データも欠損値平均補完と、欠損値削除の両方を用意した。
 # - *svc_1*はlinear SVC: 欠損値平均補完、*svc_2*はlinear SVC: 欠損値削除、*svc_3*はkernel SVC(rbf): 欠損値削除として訓練した。
 
-# In[62]:
+# In[1]:
 
 
 import numpy as np
@@ -14,14 +14,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[63]:
+# In[2]:
 
 
 train_data_raw = pd.read_csv('../data/train.csv')
 train_data_raw.head()
 
 
-# In[64]:
+# In[3]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -33,7 +33,7 @@ train_data_columns = train_data.columns.values
 train_data
 
 
-# In[65]:
+# In[4]:
 
 
 # 欠損値を平均値で補完する: train_data_imputed
@@ -49,7 +49,7 @@ y_imp = train_data_imputed['Survived']
 X_imp
 
 
-# In[66]:
+# In[5]:
 
 
 # 訓練用、テスト用にデータ分割する
@@ -68,7 +68,7 @@ X_imp_train_std = sc.transform(X_imp_train)
 X_imp_test_std = sc.transform(X_imp_test)
 
 
-# In[67]:
+# In[6]:
 
 
 # 欠損値を含む行を削除する: train_data_dropna
@@ -81,7 +81,7 @@ y_dna = train_data_dropna['Survived']
 X_dna   # X.shape = (891, 8)
 
 
-# In[68]:
+# In[7]:
 
 
 # 訓練用、テスト用にデータ分割する
@@ -100,7 +100,7 @@ X_dna_train_std = sc.transform(X_dna_train)
 X_dna_test_std = sc.transform(X_dna_test)
 
 
-# In[69]:
+# In[8]:
 
 
 # 決定木で分類モデル作成
@@ -118,7 +118,7 @@ from sklearn.metrics import accuracy_score
 print('Accuracy: %.3f' % accuracy_score(y_imp_test, y_pred_1))
 
 
-# In[72]:
+# In[9]:
 
 
 # 決定木を図で出力
