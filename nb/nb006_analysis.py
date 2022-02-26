@@ -3,9 +3,9 @@
 
 # # Overview
 # - nb004の結果が一番良かった、欠損値平均補完/ランダムフォレストでパイプライン*pl_1*作成。
-# - 層化k分割交差検証を実施。
+# - 層化k分割交差検証を実施。また、訓練データ数を横軸にとったLearning Curve、ランダムフォレストの決定木数を横軸に取ったValidation Curveを作成。
 
-# In[1]:
+# In[3]:
 
 
 import numpy as np
@@ -13,14 +13,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[2]:
+# In[4]:
 
 
 train_data_raw = pd.read_csv('../data/train.csv')
 train_data_raw.head()
 
 
-# In[30]:
+# In[5]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -36,19 +36,19 @@ y = train_data['Survived'].values
 X
 
 
-# In[31]:
+# In[7]:
 
 
 # 訓練用、テスト用にデータ分割する   !!!テストデータ情報の混入防止!!!
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=21, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21, stratify=y)   # 訓練:テスト = 80:20
 
 print('Label counts in y: [0 1] =', np.bincount(y))
 print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
 
 
-# In[32]:
+# In[47]:
 
 
 # Pipeline: pl_1
@@ -62,15 +62,16 @@ from sklearn.pipeline import make_pipeline
 
 pl_1 = make_pipeline(SimpleImputer(missing_values=np.nan, strategy='mean'),
                      StandardScaler(),
-                     RandomForestClassifier(criterion='gini', n_estimators=50, random_state=21, n_jobs=2))
+                     RandomForestClassifier(criterion='gini', n_estimators=100, random_state=21, n_jobs=2))
 pl_1.fit(X_train, y_train)
 print('Accuracy: %.3f' % pl_1.score(X_test, y_test))
 
 
-# In[33]:
+# In[12]:
 
 
-# Stratified k-fold cross validation
+# Stratified k-fold Cross Validation
+# "StratifiedKFold"を使って手動
 # ===================================
 
 from sklearn.model_selection import StratifiedKFold
@@ -82,4 +83,53 @@ for k, (train, test) in enumerate(kfold):
     score = pl_1.score(X_train[test], y_train[test])
     scores.append(score)
     print('Fold: %d, Class dist: %s, Accuracy: %.3f' % (k+1, np.bincount(y_train[train]), score))
+
+
+# In[33]:
+
+
+# Learning Curve
+# "learning_curve"を使い、データ個数変えてk分割検証を自動で実施
+# =============================================================
+
+from sklearn.model_selection import learning_curve
+train_sizes, train_scores, valid_scores = learning_curve(estimator=pl_1, X=X_train, y=y_train,
+                                                       train_sizes=np.linspace(0.1, 1, 19), cv=10, n_jobs=-1)
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+valid_mean = np.mean(valid_scores, axis=1)
+valid_std = np.std(valid_scores, axis=1)
+
+plt.plot(train_sizes, train_mean, color='blue', marker='o', markersize=5, label='Training accuracy')
+plt.fill_between(train_sizes, train_mean+train_std, train_mean-train_std, color='blue', alpha=0.2)
+plt.plot(train_sizes, valid_mean, color='green', marker='s', markersize=5, linestyle='--', label='Validation accuracy')
+plt.fill_between(train_sizes, valid_mean+valid_std, valid_mean-valid_std, color='green', alpha=0.2)
+plt.grid()
+plt.xlabel('Number of training examples')
+plt.ylabel('Accuracy')
+
+
+# In[52]:
+
+
+# Validation Curve
+# "validation_curve"を使い、ランダムフォレストのn_estimatorを変えてk分割交差検証を自動で実施
+# ===========================================================================================
+
+from sklearn.model_selection import validation_curve
+param_range = np.arange(10, 200, 10)
+train_scores, valid_scores = validation_curve(estimator=pl_1, X=X_train, y=y_train,
+                                              param_name='randomforestclassifier__n_estimators', param_range=param_range, cv=10)
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+valid_mean = np.mean(valid_scores, axis=1)
+valid_std = np.std(valid_scores, axis=1)
+
+plt.plot(param_range, train_mean, color='blue', marker='o', markersize=5, label='Training accuracy')
+plt.fill_between(param_range, train_mean+train_std, train_mean-train_std, color='blue', alpha=0.2)
+plt.plot(param_range, valid_mean, color='green', marker='s', markersize=5, linestyle='--', label='Validation accuracy')
+plt.fill_between(param_range, valid_mean+valid_std, valid_mean-valid_std, color='green', alpha=0.2)
+plt.grid()
+plt.xlabel('Nuber of estimator in Random Forest Classifier')
+plt.ylabel('Accuracy')
 

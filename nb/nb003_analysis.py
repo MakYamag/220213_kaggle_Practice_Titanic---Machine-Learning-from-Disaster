@@ -6,7 +6,7 @@
 # - nb001, nb002と同様、*Name*、*Ticket*、*Cabin*は、ひとまず特徴量から抜いた。データも欠損値平均補完と、欠損値削除の両方を用意した。
 # - *svc_1*はlinear SVC: 欠損値平均補完、*svc_2*はlinear SVC: 欠損値削除、*svc_3*はkernel SVC(rbf): 欠損値削除として訓練した。
 
-# In[1]:
+# In[4]:
 
 
 import numpy as np
@@ -21,7 +21,7 @@ train_data_raw = pd.read_csv('../data/train.csv')
 train_data_raw.head()
 
 
-# In[13]:
+# In[6]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -33,7 +33,7 @@ train_data_columns = train_data.columns.values
 train_data
 
 
-# In[20]:
+# In[11]:
 
 
 # 欠損値を平均値で補完する: train_data_imputed
