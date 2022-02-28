@@ -4,7 +4,7 @@
 # # Overview
 # - nb007までは取り除いていた*Name*、*Ticket*、*Cabin*を特徴量として取り扱えるよう、データ処理を行う。
 
-# In[238]:
+# In[2]:
 
 
 import numpy as np
@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[255]:
+# In[3]:
 
 
 #df_train = pd.read_csv('/content/drive/My Drive/Colab Notebooks/data/train.csv')   # Google Colabの場合はこちら
@@ -20,28 +20,32 @@ df_train = pd.read_csv('../data/train.csv')   # ローカルの場合はこち�
 df_train.head()
 
 
-# In[256]:
+# In[7]:
 
 
-print(df_train.isnull().sum())
+# 特徴量をX,ラベルをyとして分離する
+df_train_X = df_train.drop(['Survived'], axis=1)
+df_train_y = df_train['Survived']
+print(df_train_X.isnull().sum(), '\n')
+print('Nan in y: %d' % df_train_y.isnull().sum())
 
 
-# In[257]:
+# In[8]:
 
 
 # 'Embarked'の欠損値処理
 # =======================
 
-print('Before: \n%s\n' % df_train['Embarked'].value_counts())
+print('Before: \n%s\n' % df_train_X['Embarked'].value_counts())
 
 # 欠損値は2つだけなので、最頻値('S')で埋めることとする
-df_train['Embarked'] = df_train['Embarked'].fillna(df_train['Embarked'].mode().iloc[0])
+df_train_X['Embarked'] = df_train_X['Embarked'].fillna(df_train_X['Embarked'].mode().iloc[0])
 
-print('After: \n%s\n' % df_train['Embarked'].value_counts())
-print(df_train.isnull().sum())
+print('After: \n%s\n' % df_train_X['Embarked'].value_counts())
+print(df_train_X.isnull().sum())
 
 
-# In[258]:
+# In[11]:
 
 
 # 'Age'の欠損値処理
@@ -50,18 +54,13 @@ print(df_train.isnull().sum())
 print(df_train.corrwith(df_train['Age']), '\n')
 
 # 'Age'は'Pclass'と相関が高いため、'Pclass'と'Sex'でグループ分けし、各グループの中央値で置き換える
-print(df_train.groupby(['Pclass', 'Sex'])['Age'].median(), '\n')
-df_train['Age'] = df_train.groupby(['Pclass', 'Sex'])['Age'].apply(lambda x: x.fillna(x.median()))
-print(df_train.isnull().sum())
+print(df_train_X.groupby(['Pclass', 'Sex'])['Age'].median(), '\n')
+df_train_X['Age'] = df_train_X.groupby(['Pclass', 'Sex'])['Age'].apply(lambda x: x.fillna(x.median()))
+print(df_train_X.isnull().sum())
 
 
 # In[90]:
 
-
-# 特徴量をX,ラベルをyとして分離しNumpy配列にする
-X = df_train_raw.drop(['Survived'], axis=1).values
-y = df_train_raw['Survived'].values
-print(X, '\n')
 
 # 訓練用、テスト用にデータ分割する   # 本当は最初にする必要あり？
 from sklearn.model_selection import train_test_split
