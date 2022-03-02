@@ -79,5 +79,5 @@
 - 引き続きnb008でのデータ前処理、特徴量作成を行った。
 
 [nb008]
-*Cabin*は先頭のアルファベットを抽出し、欠損値はZで補完した。
-*Name*からTitleを取り出し、Master、Miss、Mr、Mrs、Othersに分類した。
+- *Cabin*は先頭のアルファベットを抽出し、欠損値はZで補完した。
+- *Name*からTitleを取り出し、Master、Miss、Mr、Mrs、Othersに分類した。
