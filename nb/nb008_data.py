@@ -3,8 +3,10 @@
 
 # # Overview
 # - nb007までは取り除いていた*Name*、*Ticket*、*Cabin*を特徴量として取り扱えるよう、データ処理を行う。
+# - *Age*は*Sex*と*Pclass*のグループごとに中央値で補完。*Embarked*は最頻値で補完。*Cabin*は先頭のアルファベットを抽出し、欠損値はZで補完。
+# - *Name*からTitleを取り出し、Master、Miss、Mr、Mrs、Othersに分類。
 
-# In[2]:
+# In[1]:
 
 
 import numpy as np
@@ -12,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[3]:
+# In[2]:
 
 
 #df_train = pd.read_csv('/content/drive/My Drive/Colab Notebooks/data/train.csv')   # Google Colabの場合はこちら
@@ -20,7 +22,7 @@ df_train = pd.read_csv('../data/train.csv')   # ローカルの場合はこち�
 df_train.head()
 
 
-# In[7]:
+# In[43]:
 
 
 # 特徴量をX,ラベルをyとして分離する
@@ -30,7 +32,7 @@ print(df_train_X.isnull().sum(), '\n')
 print('Nan in y: %d' % df_train_y.isnull().sum())
 
 
-# In[8]:
+# In[44]:
 
 
 # 'Embarked'の欠損値処理
@@ -45,7 +47,7 @@ print('After: \n%s\n' % df_train_X['Embarked'].value_counts())
 print(df_train_X.isnull().sum())
 
 
-# In[11]:
+# In[45]:
 
 
 # 'Age'の欠損値処理
@@ -57,6 +59,38 @@ print(df_train.corrwith(df_train['Age']), '\n')
 print(df_train_X.groupby(['Pclass', 'Sex'])['Age'].median(), '\n')
 df_train_X['Age'] = df_train_X.groupby(['Pclass', 'Sex'])['Age'].apply(lambda x: x.fillna(x.median()))
 print(df_train_X.isnull().sum())
+
+
+# In[49]:
+
+
+# 'Cabin'の欠損値処理
+# ====================
+
+df_train_X['Cabin'].unique()
+
+# 一文字目を取り出して新たな列'Deck'を作成、欠損値はZで置き換え
+df_train_X['Deck'] = df_train_X['Cabin'].apply(lambda d: d[0] if pd.notnull(d) else 'Z')
+df_train_X['Deck'].unique()
+print(df_train_X.isnull().sum())
+
+
+# In[123]:
+
+
+# 'Name'の特徴量生成
+# ===================
+
+# 'Mr'などのタイトルを抜き出して新たな列'Title'を作成
+df_train_X['Title'] = df_train_X['Name'].str.extract('([A-Za-z]+)\.', expand=False)
+print(df_train_X.groupby(['Title'])['Name'].count(), '\n')
+
+# 'Master'、'Miss'、'Mr'、'Mrs'に統合もしくはその他('Others')とする
+df_train_X['Title'] = df_train_X['Title'].replace(['Mlle'], 'Miss')
+df_train_X['Title'] = df_train_X['Title'].replace(['Countess', 'Mme', 'Lady'], 'Mrs')
+df_train_X['Title'] = df_train_X['Title'].replace(['Capt', 'Col', 'Don', 'Dr', 'Jonkheer', 'Major', 'Ms', 'Rev', 'Sir'], 'Others')
+
+print(df_train_X['Title'].unique())
 
 
 # In[90]:
