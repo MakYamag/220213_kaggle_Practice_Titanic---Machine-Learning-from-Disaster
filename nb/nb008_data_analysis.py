@@ -79,7 +79,7 @@ print(df_train_X.isnull().sum())
 
 # ### 特徴量生成
 
-# In[7]:
+# In[10]:
 
 
 # 'Name'の特徴量生成
@@ -94,7 +94,7 @@ df_train_X['Title'] = df_train_X['Title'].replace(['Mlle'], 'Miss')
 df_train_X['Title'] = df_train_X['Title'].replace(['Countess', 'Mme', 'Lady'], 'Mrs')
 df_train_X['Title'] = df_train_X['Title'].replace(['Capt', 'Col', 'Don', 'Dr', 'Jonkheer', 'Major', 'Ms', 'Rev', 'Sir'], 'Others')
 
-print(df_train_X['Title'].unique())
+print(df_train_X.groupby(['Title'])['Name'].count())
 
 
 # In[8]:
