@@ -215,7 +215,7 @@ bestclf = gs.best_estimator_
 print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 
-# In[19]:
+# In[ ]:
 
 
 # Learning Curve
@@ -264,5 +264,5 @@ plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
 
 # プロット画像保存
-plt.savefig('../image/nb008_lerningcurve.png')
+plt.savefig('../image/nb008_learningcurve.png')
 
