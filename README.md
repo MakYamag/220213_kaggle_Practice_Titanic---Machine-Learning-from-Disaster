@@ -94,9 +94,9 @@
 | --- | --- | ---|
 | ***PassengerId*** | - | インデックスとして使用する。データからは削除。 |
 | ***Survived*** | - | 目的変数。 |
-| *Pclass* | なし | そのまま使う。 |
+| *Pclass* | なし | そのまま使用。 |
 | *Name* | なし | *Title*を抽出し、Master（未婚男）、Miss（未婚女）、Mr（既婚男）、Mrs（既婚女）、Othersに統合および分類。 |
-| *Sex* | なし | One-hotエンコードして使う。 |
+| *Sex* | なし | One-hotエンコードして使用。 |
 | *Age* | あり | *Sex*、*Pclass*ごとのグループ（6グループ）での中央値で補完。 |
 | *SibSp* | なし | そのまま使用。*SibSp*+*Parch*+1による*Family size*列を作成。 |
 | *Parch* | なし | そのまま使用。*SibSp*+*Parch*+1による*Family size*列を作成。 |
