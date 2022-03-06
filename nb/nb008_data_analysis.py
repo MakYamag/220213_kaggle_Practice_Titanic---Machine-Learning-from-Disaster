@@ -6,7 +6,7 @@
 # - *Age*は*Sex*と*Pclass*のグループごとに中央値で補完。*Embarked*は最頻値で補完。*Cabin*は先頭のアルファベットを抽出し、欠損値はZで補完。
 # - *Name*からTitleを取り出し、Master、Miss、Mr、Mrs、Othersに分類。
 
-# In[67]:
+# In[1]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[68]:
+# In[2]:
 
 
 #df_train = pd.read_csv('/content/drive/My Drive/Colab Notebooks/data/train.csv')   # Google Colabの場合はこちら
@@ -22,7 +22,7 @@ df_train = pd.read_csv('../data/train.csv')   # ローカルの場合はこち�
 df_train.head()
 
 
-# In[69]:
+# In[3]:
 
 
 # 特徴量をX,ラベルをyとして分離する
@@ -34,7 +34,7 @@ print('Nan in y: %d' % df_train_y.isnull().sum())
 
 # ### 欠損値処理
 
-# In[70]:
+# In[4]:
 
 
 # 'Embarked'の欠損値処理
@@ -49,7 +49,7 @@ print('After: \n%s\n' % df_train_X['Embarked'].value_counts())
 print(df_train_X.isnull().sum())
 
 
-# In[71]:
+# In[5]:
 
 
 # 'Age'の欠損値処理
@@ -63,7 +63,7 @@ df_train_X['Age'] = df_train_X.groupby(['Pclass', 'Sex'])['Age'].apply(lambda x:
 print(df_train_X.isnull().sum())
 
 
-# In[72]:
+# In[6]:
 
 
 # 'Cabin'の欠損値処理
@@ -79,7 +79,7 @@ print(df_train_X.isnull().sum())
 
 # ### 特徴量生成
 
-# In[73]:
+# In[7]:
 
 
 # 'Name'の特徴量生成
@@ -97,7 +97,7 @@ df_train_X['Title'] = df_train_X['Title'].replace(['Capt', 'Col', 'Don', 'Dr', '
 print(df_train_X['Title'].unique())
 
 
-# In[74]:
+# In[8]:
 
 
 # 'Ticket'の特徴量生成
@@ -112,7 +112,7 @@ df_train_X['Ticket_length'] = df_train_X['Ticket'].apply(lambda t: len(str(t)))
 df_train_X.head()
 
 
-# In[75]:
+# In[9]:
 
 
 # 'Family_size'の作成
@@ -126,7 +126,7 @@ df_train_X.groupby(['Family_size'])['PassengerId'].count()
 
 # ### 特徴量整理
 
-# In[86]:
+# In[10]:
 
 
 # 'Sex'、'Embarked'、'Deck'、'Title'、'Ticket_first'をone-hot-encodeする
@@ -148,7 +148,7 @@ y = df_train_y.values
 
 # ### データ解析
 
-# In[88]:
+# In[11]:
 
 
 # 訓練用、テスト用にデータ分割する   # 本当は最初にしたほうがいい
@@ -161,7 +161,7 @@ print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
 
 
-# In[122]:
+# In[13]:
 
 
 # Pipeline: pl_scv
@@ -187,7 +187,7 @@ bestclf = gs.best_estimator_
 print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 
-# In[127]:
+# In[14]:
 
 
 # Pipeline: pl_randf
@@ -215,7 +215,7 @@ bestclf = gs.best_estimator_
 print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 
-# In[129]:
+# In[19]:
 
 
 # Learning Curve
@@ -262,4 +262,7 @@ plt.title('Random Forest Classifier')
 plt.ylim(0.7, 1.0)
 plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
+
+# プロット画像保存
+plt.savefig('../image/nb008_lerningcurve.png')
 

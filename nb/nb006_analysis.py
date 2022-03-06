@@ -5,7 +5,7 @@
 # - nb004の結果が一番良かった、欠損値平均補完/ランダムフォレストでパイプライン*pl_1*作成。
 # - 層化k分割交差検証を実施。また、訓練データ数を横軸にとったLearning Curve、ランダムフォレストの決定木数を横軸に取ったValidation Curveを作成。
 
-# In[3]:
+# In[1]:
 
 
 import numpy as np
@@ -13,14 +13,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-# In[4]:
+# In[2]:
 
 
 train_data_raw = pd.read_csv('../data/train.csv')
 train_data_raw.head()
 
 
-# In[5]:
+# In[3]:
 
 
 # Passengerid, Name, Ticket, Cabin列を除いた特徴量を取得
@@ -36,7 +36,7 @@ y = train_data['Survived'].values
 X
 
 
-# In[7]:
+# In[4]:
 
 
 # 訓練用、テスト用にデータ分割する   !!!テストデータ情報の混入防止!!!
@@ -48,7 +48,7 @@ print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
 
 
-# In[47]:
+# In[23]:
 
 
 # Pipeline: pl_1
@@ -62,12 +62,12 @@ from sklearn.pipeline import make_pipeline
 
 pl_1 = make_pipeline(SimpleImputer(missing_values=np.nan, strategy='mean'),
                      StandardScaler(),
-                     RandomForestClassifier(criterion='gini', n_estimators=100, random_state=21, n_jobs=2))
+                     RandomForestClassifier(criterion='gini', n_estimators=100, random_state=21, n_jobs=2, max_depth=6))
 pl_1.fit(X_train, y_train)
 print('Accuracy: %.3f' % pl_1.score(X_test, y_test))
 
 
-# In[12]:
+# In[24]:
 
 
 # Stratified k-fold Cross Validation
@@ -85,7 +85,7 @@ for k, (train, test) in enumerate(kfold):
     print('Fold: %d, Class dist: %s, Accuracy: %.3f' % (k+1, np.bincount(y_train[train]), score))
 
 
-# In[33]:
+# In[25]:
 
 
 # Learning Curve
@@ -105,11 +105,15 @@ plt.fill_between(train_sizes, train_mean+train_std, train_mean-train_std, color=
 plt.plot(train_sizes, valid_mean, color='green', marker='s', markersize=5, linestyle='--', label='Validation accuracy')
 plt.fill_between(train_sizes, valid_mean+valid_std, valid_mean-valid_std, color='green', alpha=0.2)
 plt.grid()
+plt.title('Learning Curve')
 plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
+plt.ylim(0.7, 1.0)
+
+plt.savefig('../image/nb006_learningcurve.png')
 
 
-# In[52]:
+# In[26]:
 
 
 # Validation Curve
@@ -130,6 +134,7 @@ plt.fill_between(param_range, train_mean+train_std, train_mean-train_std, color=
 plt.plot(param_range, valid_mean, color='green', marker='s', markersize=5, linestyle='--', label='Validation accuracy')
 plt.fill_between(param_range, valid_mean+valid_std, valid_mean-valid_std, color='green', alpha=0.2)
 plt.grid()
+plt.title('Validation Curve')
 plt.xlabel('Nuber of estimator in Random Forest Classifier')
 plt.ylabel('Accuracy')
 
