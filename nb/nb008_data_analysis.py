@@ -215,7 +215,7 @@ bestclf = gs.best_estimator_
 print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 
-# In[ ]:
+# In[22]:
 
 
 # Learning Curve
@@ -223,7 +223,7 @@ print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 from sklearn.model_selection import learning_curve
 
-fig = plt.figure(figsize=(9.6, 3.2), dpi=100)
+fig = plt.figure(figsize=(9.6, 3.2), dpi=80)
 
 # SVCのプロット
 svc_train_sizes, svc_train_scores, svc_valid_scores = learning_curve(estimator=pl_svc, X=X_train, y=y_train,
@@ -243,6 +243,7 @@ plt.title('SVC')
 plt.ylim(0.7, 1.0)
 plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
+plt.legend()
 
 # ランダムフォレストのプロット
 randf_train_sizes, randf_train_scores, randf_valid_scores = learning_curve(estimator=pl_randf, X=X_train, y=y_train,
@@ -262,6 +263,7 @@ plt.title('Random Forest Classifier')
 plt.ylim(0.7, 1.0)
 plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
+plt.legend()
 
 # プロット画像保存
 plt.savefig('../image/nb008_learningcurve.png')

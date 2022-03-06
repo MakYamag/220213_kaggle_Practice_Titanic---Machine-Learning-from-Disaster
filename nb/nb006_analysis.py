@@ -85,7 +85,7 @@ for k, (train, test) in enumerate(kfold):
     print('Fold: %d, Class dist: %s, Accuracy: %.3f' % (k+1, np.bincount(y_train[train]), score))
 
 
-# In[25]:
+# In[27]:
 
 
 # Learning Curve
@@ -109,6 +109,7 @@ plt.title('Learning Curve')
 plt.xlabel('Number of training examples')
 plt.ylabel('Accuracy')
 plt.ylim(0.7, 1.0)
+plt.legend()
 
 plt.savefig('../image/nb006_learningcurve.png')
 
