@@ -215,7 +215,7 @@ bestclf = gs.best_estimator_
 print('Test accuracy: %f' % bestclf.score(X_test, y_test))
 
 
-# In[23]:
+# In[ ]:
 
 
 # Learning Curve

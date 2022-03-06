@@ -85,7 +85,7 @@ for k, (train, test) in enumerate(kfold):
     print('Fold: %d, Class dist: %s, Accuracy: %.3f' % (k+1, np.bincount(y_train[train]), score))
 
 
-# In[27]:
+# In[28]:
 
 
 # Learning Curve
