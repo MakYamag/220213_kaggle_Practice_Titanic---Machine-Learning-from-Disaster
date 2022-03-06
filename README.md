@@ -96,6 +96,5 @@
 - ランダムフォレストはmax_depthを設定しないと訓練データの正解率1.0になるまでやってしまい、検証データ、テストデータは0.8前後となってしまっていた。グリッドサーチにmax_depthも盛り込み、改善した。
 - 両モデルのLearning Curveも、割といい感じに見える。nb006での訓練データがやけに高いLearning Curveも、max_depthを設定していなかったのが原因と考え、設定してやってみたところ過学習が抑制された。（nb006に追記済）
 
-![](/image/nb008_learningcurve.png)
+![](image/nb008_learningcurve.png)
 
-![nb008](https://github.com/MakYamag/220213_kaggle_Practice_Titanic---Machine-Learning-from-Disaster/blob/main/image/nb008_learningcurve.png)
