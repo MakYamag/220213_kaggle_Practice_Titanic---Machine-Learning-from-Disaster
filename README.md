@@ -98,3 +98,4 @@
 
 ![](/image/nb008_learningcurve.png)
 
+![nb008](https://github.com/MakYamag/220213_kaggle_Practice_Titanic---Machine-Learning-from-Disaster/blob/main/image/nb008_learningcurve.png)
