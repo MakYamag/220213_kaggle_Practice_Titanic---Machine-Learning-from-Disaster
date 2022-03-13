@@ -125,7 +125,7 @@
 - kaggle_nb001のハイパーパラメータを再調整したところ、0.05程度正解率アップ。
 
 #### [kaggle_nb001]
-- <u>Best score<\u>: 0.782 (Version 4)
+- <u>Best score</u>: 0.782 (Version 4)
 - Version 3: Version 2のランダムフォレストは10までだったmax_depthを、[5, 10, 15, 20, 25, 30]の範囲に広げた。スコア0.775で微減。
 - Version 4: さらにmin_samples_splitを[5, 10, 15, 20, 25, 30]の範囲でグリッドサーチに加えたところ、スコア0.782。
 
