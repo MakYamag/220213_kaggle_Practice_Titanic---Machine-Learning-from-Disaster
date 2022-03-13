@@ -5,6 +5,8 @@
 # - nb007までは取り除いていた*Name*、*Ticket*、*Cabin*を特徴量として取り扱えるよう、データ処理を行う。
 # - *Age*は*Sex*と*Pclass*のグループごとに中央値で補完。*Embarked*は最頻値で補完。*Cabin*は先頭のアルファベットを抽出し、欠損値はZで補完。
 # - *Name*からTitleを取り出し、Master、Miss、Mr、Mrs、Othersに分類。
+# - *Ticket*から1文字目を抽出した列*Ticket_first*、文字列長さを抽出した列*Ticket_length*を作成。
+# - *SibSp*+*Parch*+1による*Family size*列を作成。
 
 # In[1]:
 
@@ -79,7 +81,7 @@ print(df_train_X.isnull().sum())
 
 # ### 特徴量生成
 
-# In[10]:
+# In[7]:
 
 
 # 'Name'の特徴量生成
@@ -159,6 +161,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 print('Label counts in y: [0 1] =', np.bincount(y))
 print('Label counts in y_train: [0 1] =', np.bincount(y_train))
 print('Label counts in y_test: [0 1] =', np.bincount(y_test))
+
+
+# In[14]:
+
+
+y
 
 
 # In[13]:
