@@ -3,9 +3,9 @@
 
 # # Overview
 # - *Name*を用いて同じ家族を同定し、生存率を計算した新たな列*Family_SurvRate*を作成する。
-# - 
+# - *Ticket*を用いて上4桁が同じチケット番号のグループ分けし、生存率を計算した新たな列*Ticket_SurvRate*を作成。
 
-# In[18]:
+# In[7]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import string
 
 
-# In[2]:
+# In[8]:
 
 
 #df_train = pd.read_csv('/content/drive/My Drive/Colab Notebooks/data/train.csv')   # Google Colabの場合はこちら
@@ -22,7 +22,7 @@ data_train = pd.read_csv('../data/train.csv')   # ローカルの場合はこち
 data_train.head()
 
 
-# In[3]:
+# In[9]:
 
 
 #df_train = pd.read_csv('/content/drive/My Drive/Colab Notebooks/data/test.csv')   # Google Colabの場合はこちら
@@ -32,7 +32,7 @@ data_test.head()
 
 # ### データ前処理
 
-# In[97]:
+# In[128]:
 
 
 # 'TrainFlag'列追加
@@ -81,7 +81,7 @@ df['Title'] = df['Name'].str.extract('([A-Za-z]+)\.', expand=False)
 # 'Master'、'Miss'、'Mr'、'Mrs'に統合もしくはその他('Others')とする
 df['Title'] = df['Title'].replace(['Mlle'], 'Miss')
 df['Title'] = df['Title'].replace(['Countess', 'Mme', 'Lady'], 'Mrs')
-df['Title'] = df['Title'].replace(['Capt', 'Col', 'Don', 'Dr', 'Jonkheer', 'Major', 'Ms', 'Rev', 'Sir'], 'Others')
+df['Title'] = df['Title'].replace(['Capt', 'Col', 'Don', 'Dona', 'Dr', 'Jonkheer', 'Major', 'Ms', 'Rev', 'Sir'], 'Others')
 
 # 'Ticket'
 # --------
@@ -132,15 +132,68 @@ df_temp_train_surname = pd.DataFrame(df_temp_train.groupby('Surname')['Survived'
 df_temp_train_surname['FamilySize'] = df_temp_train.groupby('Surname')['Surname'].count()
 df_temp_train_surname['SurvivalRate'] = df_temp_train_surname['Survived'] / df_temp_train_surname['FamilySize']
 
+# Surnameが1人の場合は生存率＝答えになってしまうので平均で埋める
+family_survrate_mean = np.mean(df_temp_train_surname['SurvivalRate'])
+df_temp_train_surname['SurvivalRate'].loc[df_temp_train_surname['FamilySize']==1] = family_survrate_mean
+
 # surname_dictに辞書形式で出力し、新たな列'Family_SurvRate'にmap関数で展開する
 surname_dict = df_temp_train_surname['SurvivalRate'].to_dict()
 df['Family_SurvRate'] = df['Surname']
 df['Family_SurvRate'] = df['Family_SurvRate'].map(surname_dict)
 
-# 'Family_SurvRate'がNaN（Testデータのみに固有のSurname）については、平均で補完して'Family_SurvRate_NA'列に1を入れる
+# 'Family_SurvRate'がNaN（Testデータのみに固有のSurname）および1人しかいない'Surname'については
+# 平均で補完して'Family_SurvRate_NA'列に1を入れる
+df['Family_SurvRate'] = df['Family_SurvRate'].fillna(family_survrate_mean)
 df['Family_SurvRate_NA'] = 0
-df['Family_SurvRate_NA'].loc[df['Family_SurvRate'].isnull()==True] = 1
-df['Family_SurvRate'] = df['Family_SurvRate'].fillna(df['Family_SurvRate'].mean())
+df['Family_SurvRate_NA'].loc[df['Family_SurvRate']==family_survrate_mean] = 1
+
+
+# 'Ticket_SurvRate': チケット番号が似通っているグループ内の生存率
+# ----------------------------------------------------------------
+# Ticket_numを取り出す関数extract_ticketnumを定義
+def extract_ticketnum(data):
+    tickets = []
+    
+    for i in range (len(data)):
+        ticket = data.iloc[i]
+        
+        # スペースが入っている場合は、スペースの後ろをticket_numberとして取り出す
+        if ' ' in ticket:
+            ticket_number = ticket.split(' ')[1]
+        else:
+            ticket_number = ticket
+                
+        # ticket_numberの4桁目までを取り出す
+        ticket_ext = ticket_number[:4]
+        
+        tickets.append(ticket_ext)
+    return tickets
+
+# 'Ticlet_num'列を追加
+df['Ticket_num'] = extract_ticketnum(df['Ticket'])
+
+# 一時的にtrainを分離
+df_temp_train = df[df['TrainFlag']==1]
+
+# Ticket_numでグループ分けしたDataFrameで'SurvivalRate'を計算
+df_temp_train_ticketnum = pd.DataFrame(df_temp_train.groupby('Ticket_num')['Survived'].sum())
+df_temp_train_ticketnum['TicketSize'] = df_temp_train.groupby('Ticket_num')['Ticket_num'].count()
+df_temp_train_ticketnum['SurvivalRate'] = df_temp_train_ticketnum['Survived'] / df_temp_train_ticketnum['TicketSize']
+
+# Ticket_numが1人の場合は生存率＝答えになってしまうので平均で埋める
+ticketnum_survrate_mean = np.mean(df_temp_train_ticketnum['SurvivalRate'])
+df_temp_train_ticketnum['SurvivalRate'].loc[df_temp_train_ticketnum['TicketSize']==1] = ticketnum_survrate_mean
+
+# ticketnum_dictに辞書形式で出力し、新たな列'Ticket_SurvRate'にmap関数で展開する
+ticketnum_dict = df_temp_train_ticketnum['SurvivalRate'].to_dict()
+df['Ticket_SurvRate'] = df['Ticket_num']
+df['Ticket_SurvRate'] = df['Ticket_SurvRate'].map(ticketnum_dict)
+
+# 'Ticket_SurvRate'がNaN（Testデータのみに固有のTicket_num）および1人しかいない'Ticket_num'については
+# 平均で補完して'Ticket_SurvRate_NA'列に1を入れる
+df['Ticket_SurvRate'] = df['Ticket_SurvRate'].fillna(ticketnum_survrate_mean)
+df['Ticket_SurvRate_NA'] = 0
+df['Ticket_SurvRate_NA'].loc[df['Ticket_SurvRate']==ticketnum_survrate_mean] = 1
 
 
 # =========
@@ -153,8 +206,9 @@ df_oh = pd.get_dummies(df[['Sex', 'Embarked', 'Deck', 'Title', 'Ticket_first']],
 # one-hot-encodeデータを結合する
 df_added = pd.concat([df, df_oh], axis=1)
 
-# 'Name'、'Sex'、'Ticket'、'Cabin'、'Embarked'、'Deck'、'Title'、'Ticket_first'、'Surname'を削除する
-df_deleted = df_added.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'Deck', 'Title', 'Ticket_first', 'Surname'], axis=1)
+# 'Name'、'Sex'、'Ticket'、'Cabin'、'Embarked'、'Deck'、'Title'、'Ticket_first'、'Surname'、'Ticket_num'を削除する
+df_deleted = df_added.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'Deck', 'Title', 'Ticket_first', 'Surname', 'Ticket_num'],
+                           axis=1)
 df_deleted.info()
 
 # 訓練用とテスト用に再び分割
@@ -173,7 +227,7 @@ print('X_test:', X_test.shape)
 
 # ### データ解析
 
-# In[95]:
+# In[129]:
 
 
 # 訓練用、テスト用にデータ分割する
@@ -186,7 +240,7 @@ print('Label counts in y_train: [0 1] =', np.bincount(y_train.astype(np.int64)))
 print('Label counts in y_train_test: [0 1] =', np.bincount(y_train_test.astype(np.int64)))
 
 
-# In[96]:
+# In[133]:
 
 
 # =================================
@@ -216,7 +270,7 @@ print('Test accuracy: %f' % svc_bestclf.score(X_train_test, y_train_test))
 svc_pred = svc_bestclf.predict(X_test)
 
 
-# In[98]:
+# In[134]:
 
 
 # =============================================
@@ -249,7 +303,7 @@ print('Test accuracy: %f' % rf_bestclf.score(X_train_test, y_train_test))
 rf_pred = rf_bestclf.predict(X_test)
 
 
-# In[99]:
+# In[135]:
 
 
 # =============================================
@@ -279,7 +333,7 @@ print('Test accuracy: %f' % ada_bestclf.score(X_train_test, y_train_test))
 ada_pred = ada_bestclf.predict(X_test)
 
 
-# In[100]:
+# In[136]:
 
 
 # ========================
