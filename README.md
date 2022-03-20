@@ -159,6 +159,25 @@
 - *Ticket*を用いて上4桁が同じチケット番号のグループ内で生存率を計算し、新たな列*Ticket_SurvRate*を作成。Testデータにしかない番号は生存率計算できないため、平均値で補完し*Ticket_SurvRate_NA*列に1を入れることとした。また1人のみのグループも同じように平均で埋めた。
 - Trainデータから分離したテストデータの正解率はSVC：0.894、ランダムフォレスト：0.883、ADAブースティング：0.866、多数決アンサンブル：0.888となった。
 
-#### [kaggle_nb003]
+- 現時点でのデータのまとめは以下。
 
+| 特徴量 | 欠損 | 処理 |
+| --- | --- | ---|
+| *PassengerId* | - | インデックスとして使用する。データからは削除。 |
+| *Survived* | - | 目的変数。 |
+| *Pclass* | なし | そのまま使用。 |
+| *Name* | なし | *Title*を抽出し、Master（未婚男）、Miss（未婚女）、Mr（既婚男）、Mrs（既婚女）、Othersに統合および分類。***Surname*を抽出し、同じグループ内で生存率を計算。** |
+| *Sex* | なし | One-hotエンコードして使用。 |
+| *Age* | あり | *Sex*、*Pclass*ごとのグループ（6グループ）での中央値で補完。 |
+| *SibSp* | なし | そのまま使用。*SibSp*+*Parch*+1による*Family size*列を作成。 |
+| *Parch* | なし | そのまま使用。*SibSp*+*Parch*+1による*Family size*列を作成。 |
+| *Ticket* | なし | 1文字目で分類する列*Ticket_first*、および文字列長さで分類する列*Ticket_length*の2種類を作成。***Ticket_num*(番号上4桁)を抽出し、同じグループ内で生存率を計算。** |
+| *Fare* | あり（Testのみ） | 平均値で補完。 |
+| *Cabin* | あり | 先頭のアルファベットを抽出し、欠損値はZとする列*Deck*作成。 |
+| *Embarked* | あり（少数）| 最頻値で補完。 |
+
+#### [kaggle_nb003]
+- **Best score**: 0.782 (Version 3)
+- nb010ベースで、*Family_SurvRate*と*Ticket_SurvRate*を導入したデータで解析した。
+- *Family_SurvRate*のみ導入したVersion 3に比べ、*Ticket_SurvRate*を入れるとTrainデータのCVでは上がったが、Submission値は低下した。(Version 4: 0.766)
 
